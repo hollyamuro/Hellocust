@@ -1,0 +1,253 @@
+stages:
+ - backup_dev
+ - prepare_dev
+ - clean_dev
+ - build_dev
+ - forever_dev
+ - deploy_dev
+ - backup_prod
+ - prepare_prod
+ - clean_prod
+ - build_prod
+ - forever_prod
+ - deploy_prod
+ - failure_dev
+ - success_dev
+ - failure_prod
+ - success_prod
+
+backup_job_dev:
+ stage: backup_dev
+ script:
+  - cd D:/CustodianApi
+  - echo backup stage at %time% and directory %cd% 
+  - xcopy "D:\CustodianApi\log" "D:\CustodianApi_LOG\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_Log\log" /I/Y
+  - cd "D:\CustodianApi_LOG\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_Log\log"
+  - if exist  "err.log" rename err.log  "%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_err.log"
+  - if exist  "out.log" rename out.log  "%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_out.log"
+  - echo current timetest %time%
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Dev
+ only:
+  - dev 
+
+prepare_job_dev:
+ stage: prepare_dev
+ script:
+  - cd D:/
+  - rd D:\CustodianApi_BK /s /q
+  - xcopy "D:\CustodianApi" "D:\CustodianApi_BK\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%_BK\" /I/E/Y/EXCLUDE:D:\CustodianApi\exclusion.txt
+  - cd "D:\CustodianApi_BK\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%_BK\"
+  - del package-lock.json
+  - cd D:/CustodianApi
+  - echo prepare stage at %time% and directory %cd%
+  - git reset --hard HEAD~
+  - git pull
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Dev
+ only:
+  - dev  
+
+clean_job_dev:
+ stage: clean_dev
+ script:
+  - echo clean stage at %time% and directory %cd%
+  - if exist node_modules rd /s /q node_modules
+  - del package-lock.json
+  - cd D:/CustodianApi/log
+  - echo %cd%
+  - del *.log
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Dev
+ only:
+  - dev 
+  
+build_job_dev:
+ stage: build_dev
+ script:
+  - cd D:/CustodianApi
+  - echo build stage at %time% and directory %cd%
+  - npm install
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Dev
+ only:
+  - dev  
+  
+forever_job_dev:
+ stage: forever_dev
+ script:
+  - cd D:/CustodianApi
+  - echo forever stage at %time% and directory %cd%
+  - npm run win_ci_function_dev forever CustodianApi
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Dev
+ only:
+  - dev  
+
+deploy_job_dev:
+ stage: deploy_dev
+ script:
+  - cd D:/CustodianApi
+  - echo deploy stage at %time% and directory %cd%
+  - npm run win_forever_dev
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Dev
+ only:
+  - dev  
+
+failure_job_dev:
+ stage: failure_dev
+ script:
+  - cd D:/CustodianApi
+  - echo failure stage at %time% and directory %cd%
+ variables:
+  GIT_STRATEGY: none
+ when: on_failure
+ tags:
+  - Dev
+
+success_job_dev:
+ stage: success_dev
+ script:
+  - cd D:/CustodianApi
+  - echo success stage at %time% and directory %cd%
+ variables:
+  GIT_STRATEGY: none
+ when: on_success
+ tags:
+  - Dev
+
+
+
+
+backup_job_prod:
+ stage: backup_prod
+ script:
+  # - cd D:/CustodianApi
+  - echo backup stage at %time% and directory %cd%
+  # - xcopy "D:\CustodianApi\log" "D:\CustodianApi_LOG\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_Log\log" /I
+  # - cd "D:\CustodianApi_LOG\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_Log\log"
+  # - if exist  "err.log" rename err.log  "%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_err.log"
+  # - if exist  "out.log" rename out.log  "%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%%time:~0,2%%time:~3,2%_out.log"
+  - echo current timetest %time%
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Prod
+ only:
+  # - dev
+  - master  
+
+prepare_job_prod:
+ stage: prepare_prod
+ script:
+  - cd D:/
+  # - rd D:\CustodianApi_BK /s /q
+  # - xcopy "D:\CustodianApi" "D:\CustodianApi_BK\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%_BK\" /I/E/Y/EXCLUDE:D:\CustodianApi\exclusion.txt
+  # - cd "D:\CustodianApi_BK\%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%_BK\"
+  # - del package-lock.json
+  # - cd D:/CustodianApi
+  - echo prepare stage at %time% and directory %cd%
+  # - git reset --hard HEAD~
+  # - git pull
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Prod
+ only:
+  - master   
+ 
+clean_job_prod:
+ stage: clean_prod
+ script:
+  - echo clean stage at %time% and directory %cd%
+  # - if exist node_modules rd /s /q node_modules
+  # - del package-lock.json
+  # - cd D:/CustodianApi/log
+  # - echo %cd%
+  # - del *.log
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Prod
+ only:
+  - master  
+  
+build_job_prod:
+ stage: build_prod
+ script:
+  # - cd D:/CustodianApi
+  - echo build stage at %time% and directory %cd%
+  # - npm install
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Prod
+ only:
+  - master  
+  
+forever_job_prod:
+ stage: forever_prod
+ script:
+  # - cd D:/CustodianApi
+  - echo forever stage at %time% and directory %cd%
+  # - npm run win_ci_function_dev forever CustodianApi
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Prod
+ only:
+  - master  
+
+deploy_job_prod:
+ stage: deploy_prod
+ script:
+  # - cd D:/CustodianApi
+  - echo deploy stage at %time% and directory %cd%
+  # - npm run win_forever_dev
+ variables:
+  GIT_STRATEGY: none
+ tags:
+  - Prod
+ only:
+  - master 
+
+
+failure_job_prod:
+ stage: failure_prod
+ script:
+  - cd D:/CustodianApi
+  - echo failure stage at %time% and directory %cd%
+ variables:
+  GIT_STRATEGY: none
+ when: on_failure
+ tags:
+  - Prod
+ only:
+  - master 
+
+success_job_prod:
+ stage: success_prod
+ script:
+  - cd D:/CustodianApi
+  - echo success stage at %time% and directory %cd%
+ variables:
+  GIT_STRATEGY: none
+ when: on_success
+ tags:
+  - Prod
+ only:
+  - master       
+

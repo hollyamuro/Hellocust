@@ -1,0 +1,45 @@
+{
+  "name": "custodianapi",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "prod": "NODE_ENV=production nohup node ./bin/CustodianApi &>/dev/null &",
+    "dev": "NODE_ENV=development nohup node ./bin/CustodianApi &>/dev/null &",
+    "debug": "NODE_ENV=development DEBUG=CustodianApi:* nodemon ./bin/CustodianApi",
+    "win_prod": "set NODE_ENV=production&& node ./bin/CustodianApi",
+    "win_dev": "set NODE_ENV=development&& node ./bin/CustodianApi",
+    "win_debug": "set NODE_ENV=development&& set DEBUG=CustodianApi:*&&  nodemon ./bin/CustodianApi",
+    "win_forever_prod": "set NODE_ENV=production&& set DEBUG= && forever start -o ./log/out.log -e ./log/err.log -m 3 -c  node ./bin/CustodianApi",
+    "win_forever_dev": "set NODE_ENV=development&& set DEBUG=CustodianApi:*&&  forever start -o ./log/out.log -e ./log/err.log -m 3 -c  node ./bin/CustodianApi",
+    "forever_prod": "NODE_ENV=production forever start -o ./log/out.log -e ./log/err.log -m 3 -c node ./bin/CustodianApi",
+    "forever_dev": "NODE_ENV=development forever start -o ./log/out.log -e ./log/err.log -m 3 -c node ./bin/CustodianApi",
+    "win_ci_function_prod": "set NODE_ENV=production&& set DEBUG= && node ./ci_tools/CICommand",
+    "win_ci_function_dev": "set NODE_ENV=development&& set DEBUG= && node ./ci_tools/CICommand",
+    "ci_function_prod": "NODE_ENV=production DEBUG= node ./ci_tools/CICommand",
+    "ci_function_dev": "NODE_ENV=development DEBUG= node ./ci_tools/CICommand",
+    "eslint_debug": "eslint **/*.js ./bin/CustodianApi --ignore-pattern node_modules/ --ignore-pattern docs/",
+    "eslint_fix": "eslint **/*.js ./bin/CustodianApi --ignore-pattern node_modules/ --ignore-pattern docs/ --ignore-pattern public/ --fix"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "crypto-js": "^3.1.9-1",
+    "date-format": "^1.2.0",
+    "debug": "~2.6.3",
+    "ejs": "~2.5.6",
+    "express": "~4.15.2",
+    "forever": "^0.15.3",
+    "morgan": "~1.8.1",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.10",
+    "serve-favicon": "~2.4.2",
+    "sqlite3": "^4.0.0",
+    "tedious": "^2.6.1",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "nodemon": "^1.17.5"
+  }
+}
